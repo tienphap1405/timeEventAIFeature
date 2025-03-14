@@ -1,16 +1,20 @@
-const { createServer } = require('node:http');
+const express = require("express");
+const bodyParser = require("body-parser");
+const db = require("./queries"); // Correctly importing from queries.js
+require("dotenv").config();
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const app = express();
 
-const server = createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get("/", (req, res) => {
+  res.json({ info: "Node.js, Express, and Postgres API" });
 });
 
-
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.get("/clients", db.getClients);  // Calling db.getClients here
+app.post("/createClient", db.createClient);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}.`);
 });
